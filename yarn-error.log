@@ -1,0 +1,51 @@
+Arguments: 
+  /usr/bin/node /usr/bin/yarn build
+
+PATH: 
+  /home/buddy/.local/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin:/home/buddy/bin:/home/buddy/.config/composer/vendor/bin
+
+Yarn version: 
+  1.19.1
+
+Node version: 
+  12.13.0
+
+Platform: 
+  linux x64
+
+Trace: 
+  Invariant Violation: Script must exist
+      at invariant (/usr/lib/node_modules/yarn/lib/cli.js:2314:15)
+      at /usr/lib/node_modules/yarn/lib/cli.js:62365:11
+      at Generator.next (<anonymous>)
+      at step (/usr/lib/node_modules/yarn/lib/cli.js:304:30)
+      at /usr/lib/node_modules/yarn/lib/cli.js:322:14
+      at new Promise (<anonymous>)
+      at new F (/usr/lib/node_modules/yarn/lib/cli.js:5301:28)
+      at /usr/lib/node_modules/yarn/lib/cli.js:301:12
+      at realRunCommand (/usr/lib/node_modules/yarn/lib/cli.js:62437:23)
+      at action.action (/usr/lib/node_modules/yarn/lib/cli.js:62498:16)
+
+npm manifest: 
+  {
+    "name": "small_poll",
+    "version": "0.1.0",
+    "private": true,
+    "scripts": {
+      "serve": "node index.js",
+      "build": ""
+    },
+    "dependencies": {
+      "axios": "^0.19.0",
+      "axios-auth-refresh": "^1.0.7",
+      "body-parser": "^1.19.0",
+      "cors": "^2.8.5",
+      "express": "^4.17.1"
+    }
+  }
+
+yarn manifest: 
+  No manifest
+
+Lockfile: 
+  No lockfile
