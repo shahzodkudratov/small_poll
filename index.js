@@ -15,8 +15,8 @@ app.get('/admin', express.static('dist'))
 
 const credentials = {
     projectID: "6600e36b-4ecc-473b-ac50-d7795256b092",
-    key: process.env.API_KEY,
-    secret: process.env.API_SECRET
+    key: '2061d964-3b5c-429a-bc46-a54889ecaa4d',
+    secret: 'fFOthKIeTC0jCgdqT35zsPy3861HLALNRSKJUvb3jAi9eOsfqNfwIYKvKvbQ7Dfp2KUuixpnjnQV48cVFjOilw=='
 }
 
 jexiaSDK.jexiaClient().init(credentials, dataModule);
@@ -27,6 +27,7 @@ app.get('/poll/:uuid', async (req, res) => {
     const uuid = req.params.uuid
 
     if(isValidV4UUID(uuid)) {
+        console.log(new Date().toString(), 'requesting')
         await dataModule
         .dataset('polls')
         .select()
@@ -127,4 +128,5 @@ app.post('/vote/', async (req, res) => {
     })
 })
 
-app.listen(80, '0.0.0.0')
+// app.listen(80, '0.0.0.0')
+app.listen(3000)
