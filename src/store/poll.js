@@ -1,6 +1,5 @@
 import router from '@/router'
 import Vue from 'vue'
-import axios from 'axios'
 import _ from 'lodash'
 
 const state = {
@@ -283,27 +282,27 @@ const actions = {
     getPolls(context) {
         context.commit('setBusy', true, { root: true })
 
-        axios.all([
-            context.dispatch('apicalls/getPolls', null, { root: true }),
-            context.dispatch('apicalls/getQuestions', null, { root: true }),
-            context.dispatch('apicalls/getAnswers', null, { root: true })
-        ])
+        // axios.all([
+        //     context.dispatch('apicalls/getPolls', null, { root: true }),
+        //     context.dispatch('apicalls/getQuestions', null, { root: true }),
+        //     context.dispatch('apicalls/getAnswers', null, { root: true })
+        // ])
 
-        .then(axios.spread((polls, questions, answers) => {
-            context.commit('savePolls', { polls: polls.data })
-            context.commit('saveQuestions', { questions: questions.data })
-            context.commit('saveAnswers', { answers: answers.data })
+        // .then(axios.spread((polls, questions, answers) => {
+        //     context.commit('savePolls', { polls: polls.data })
+        //     context.commit('saveQuestions', { questions: questions.data })
+        //     context.commit('saveAnswers', { answers: answers.data })
             
-            Vue.notify({
-                group: 'msg',
-                type: 'success',
-                title: 'Polls are loaded'
-            })
-        }))
+        //     Vue.notify({
+        //         group: 'msg',
+        //         type: 'success',
+        //         title: 'Polls are loaded'
+        //     })
+        // }))
 
-        .finally(() => {
-            context.commit('setBusy', false, { root: true })
-        })
+        // .finally(() => {
+        //     context.commit('setBusy', false, { root: true })
+        // })
     },
 
     getAnswersByPollId(context, payload) {
