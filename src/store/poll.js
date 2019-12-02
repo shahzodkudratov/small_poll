@@ -279,30 +279,24 @@ const actions = {
     // |   / -_) _` / _` |
     // |_|_\___\__,_\__,_|
     
-    getPolls(context) {
+    async getPolls(context) {
         context.commit('setBusy', true, { root: true })
 
-        // axios.all([
-        //     context.dispatch('apicalls/getPolls', null, { root: true }),
-        //     context.dispatch('apicalls/getQuestions', null, { root: true }),
-        //     context.dispatch('apicalls/getAnswers', null, { root: true })
-        // ])
+        let polls = await context.dispatch('apicalls/getPolls', null, { root: true })
+        let questions = await context.dispatch('apicalls/getQuestions', null, { root: true })
+        let answers = await context.dispatch('apicalls/getAnswers', null, { root: true })
 
-        // .then(axios.spread((polls, questions, answers) => {
-        //     context.commit('savePolls', { polls: polls.data })
-        //     context.commit('saveQuestions', { questions: questions.data })
-        //     context.commit('saveAnswers', { answers: answers.data })
-            
-        //     Vue.notify({
-        //         group: 'msg',
-        //         type: 'success',
-        //         title: 'Polls are loaded'
-        //     })
-        // }))
+        context.commit('savePolls', { polls: polls })
+        context.commit('saveQuestions', { questions: questions })
+        context.commit('saveAnswers', { answers: answers })
+        
+        Vue.notify({
+            group: 'msg',
+            type: 'success',
+            title: 'Polls are loaded'
+        })
 
-        // .finally(() => {
-        //     context.commit('setBusy', false, { root: true })
-        // })
+        context.commit('setBusy', false, { root: true })
     },
 
     getAnswersByPollId(context, payload) {
@@ -313,10 +307,10 @@ const actions = {
 
             .then(response => {
                 context.commit('updateAnswers', {
-                    answers: response.data
+                    answers: response
                 })
 
-                resolve(response.data)
+                resolve(response)
             })
 
             .catch(error => {
@@ -338,7 +332,7 @@ const actions = {
             } }, { root: true })
 
             .then(response => {
-                let poll = response.data[0]
+                let poll = response[0]
 
                 let questions = payload.poll.questions.map(question => {
                     return {
@@ -392,7 +386,7 @@ const actions = {
             }, { root: true })
 
             .then(response => {
-                let questions = response.data
+                let questions = response
                 let answers = []
 
                 questionsAnswers.forEach((question, index) => {
@@ -444,8 +438,8 @@ const actions = {
             }, { root: true })
 
             .then(response => {
-                context.commit('saveAnswers', { answers: response.data })
-                resolve(response.data)
+                context.commit('saveAnswers', { answers: response })
+                resolve(response)
             })
 
             .catch(error => {
@@ -473,7 +467,7 @@ const actions = {
             }, { root: true })
 
             .then(response => {
-                let poll = response.data[0]
+                let poll = response[0]
                 poll.questions = response
                 context.commit('updatePoll', { poll: poll })
                 resolve(poll)
@@ -541,14 +535,13 @@ const actions = {
             })
 
             if(!_.isEmpty(diffs)) {
-                console.log("Q1. ", diffs) //eslint-disable-line
                 context.dispatch('apicalls/updateQuestions', {
                     questions: diffs
                 }, { root: true })
 
                 .then(response => {
                     let questions = response.map(el => {
-                        return el.data[0]
+                        return el[0]
                     })
 
                     context.commit('updateQuestions', { questions: questions })
@@ -599,7 +592,6 @@ const actions = {
             })
 
             if(!_.isEmpty(added)) {
-                console.log("Q2. ", added) //eslint-disable-line
                 context.dispatch('createQuestions', {
                     questions: added
                 })
@@ -618,7 +610,6 @@ const actions = {
             })
 
             if(!_.isEmpty(deleted)) {
-                console.log("Q3. ", deleted) //eslint-disable-line
                 context.dispatch('deleteQuestions', {
                     questions: deleted
                 })
@@ -683,7 +674,6 @@ const actions = {
             })
 
             if(!_.isEmpty(deleted)) {
-                console.log("A1. ", deleted) //eslint-disable-line
                 context.dispatch('deleteAnswers', {
                     answers: deleted
                 })
@@ -694,7 +684,6 @@ const actions = {
             }
 
             if(!_.isEmpty(added)) {
-                console.log("A2. ", added) //eslint-disable-line
                 context.dispatch('createAnswers', {
                     answers: added
                 })
@@ -705,17 +694,16 @@ const actions = {
             }
 
             if(!_.isEmpty(diffs)) {
-                console.log("A3. ", diffs) //eslint-disable-line
                 context.dispatch('apicalls/updateAnswers', {
                     answers: diffs
                 }, { root: true })
 
                 .then(response => {
                     let answers = response.map(el => {
-                        return el.data[0]
+                        return el[0]
                     })
                     context.commit('updateAnswers', { answers: answers })
-                    resolve(response.data)
+                    resolve(response)
                 })
 
                 .catch(error => {
@@ -742,6 +730,7 @@ const actions = {
 
             .then(response => {
                 context.commit('deletePoll', { poll: payload.poll })
+                
                 resolve(response)
             })
 

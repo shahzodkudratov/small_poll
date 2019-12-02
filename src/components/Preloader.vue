@@ -36,7 +36,8 @@
     export default {
         data() {
             return {
-                dots: 1
+                dots: 1,
+                loop: undefined
             }
         },
 
@@ -63,13 +64,26 @@
                 } else {
                     this.dots++
                 }
+            },
+
+            interval(state) {
+                if(state) {
+                    this.loop = setInterval(() => {
+                        this.update()   
+                    }, 500)
+                } else {
+                    clearInterval(this.loop)
+                }
             }
         },
 
         created() {
-            setInterval(() => {
-                this.update()   
-            }, 500)
+            this.interval(true)
+            this.$store.subscribe((mutation, state) => {
+                if(mutation.type === 'setPreloader') {
+                    this.interval(state.preloader)
+                }
+            })
         }
     };
 </script>

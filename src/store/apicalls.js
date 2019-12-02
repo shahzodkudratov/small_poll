@@ -1,6 +1,7 @@
 import router from '@/router'
 import Vue from 'vue'
 import api from '@/helpers/api'
+import { field } from 'jexia-sdk-js'
 
 
 
@@ -72,13 +73,12 @@ const actions = {
             router.push({ path: '/' })
         })
 
-        .catch(err => {
+        .catch(() => {
             Vue.notify({
                 group: 'msg',
                 type: 'error',
-                title: 'err',
+                title: 'Log in failed',
             })
-            console.log([err]) //eslint-disable-line
 
             if(router.currentRoute.name !== 'login') {
                 router.push({ path: '/login' })
@@ -97,182 +97,169 @@ const actions = {
     // |   / -_) _` / _` |
     // |_|_\___\__,_\__,_|
 
-    async getPolls() {
-        return await api.dataModule
+    getPolls() {
+        return api.dataModule
         .dataset('polls')
         .select()
         .execute()
     },
 
-    async getQuestions() {
-        return await api.dataModule
+    getQuestions() {
+        return api.dataModule
         .dataset('questions')
         .select()
         .execute()
     },
 
-    async getAnswers() {
-        return await api.dataModule
+    getAnswers() {
+        return api.dataModule
         .dataset('answers')
         .select()
         .execute()
     },
 
-    // getAnswersByPollId(context, payload) {
-    //     return api({
-    //         method: 'get',
-    //         url: `/ds/answers?cond=[{"field":"poll_uuid"}, "=", "${payload.poll_uuid}"]`
-    //     })
-    // },
+    getAnswersByPollId(context, payload) {
+        return api.dataModule
+        .dataset('answers')
+        .select()
+        .where(field('poll_uuid').isEqualTo(payload.poll_uuid))
+        .execute()
+    },
 
 
 
-    // //   ___              _
-    // //  / __|_ _ ___ __ _| |_ ___
-    // // | (__| '_/ -_) _` |  _/ -_)
-    // //  \___|_| \___\__,_|\__\___|
+    //   ___              _
+    //  / __|_ _ ___ __ _| |_ ___
+    // | (__| '_/ -_) _` |  _/ -_)
+    //  \___|_| \___\__,_|\__\___|
 
-    // createPoll(context, payload) {
-    //     return api({
-    //         method: 'post',
-    //         url: '/ds/polls',
-    //         data: payload.poll
-    //     })
-    // },
+    createPoll(context, payload) {
+        return api.dataModule
+        .dataset('polls')
+        .insert(payload.poll)
+        .execute()
+    },
 
-    // createQuestions(context, payload) {
-    //     return api({
-    //         method: 'post',
-    //         url: '/ds/questions',
-    //         data: payload.questions
-    //     })
-    // },
+    createQuestions(context, payload) {
+        return api.dataModule
+        .dataset('questions')
+        .insert(payload.questions)
+        .execute()
+    },
 
-    // createAnswers(context, payload) {
-    //     return api({
-    //         method: 'post',
-    //         url: url + '/ds/answers',
-    //         data: payload.answers
-    //     })
-    // },
+    createAnswers(context, payload) {
+        return api.dataModule
+        .dataset('answers')
+        .insert(payload.answers)
+        .execute()
+    },
 
 
 
-    // //  _   _          _      _
-    // // | | | |_ __  __| |__ _| |_ ___
-    // // | |_| | '_ \/ _` / _` |  _/ -_)
-    // //  \___/| .__/\__,_\__,_|\__\___|
-    // //       |_|
+    //  _   _          _      _
+    // | | | |_ __  __| |__ _| |_ ___
+    // | |_| | '_ \/ _` / _` |  _/ -_)
+    //  \___/| .__/\__,_\__,_|\__\___|
+    //       |_|
 
-    // updatePoll(context, payload) {
-    //     return api({
-    //         method: 'patch',
-    //         url: `/ds/polls?cond=[{"field":"id"}, "=", "${payload.poll.id}"]`,
-    //         data: {
-    //             name: payload.poll.name,
-    //             message: payload.poll.message
-    //         }
-    //     })
-    // },
+    updatePoll(context, payload) {
+        return api.dataModule
+        .dataset('polls')
+        .update({
+            name: payload.poll.name,
+            message: payload.poll.message
+        })
+        .where(field('id').isEqualTo(payload.poll.id))
+        .execute()
+    },
 
-    // updateQuestions(context, payload) {
-    //     return axios.all(payload.questions.map(question => {
-    //         return api({
-    //             method: 'patch',
-    //             url: `/ds/questions?cond=[{"field":"id"}, "=", "${question.id}"]`,
-    //             data: {
-    //                 question: question.question,
-    //                 order: question.order,
-    //                 skipped: question.skipped ? true : false
-    //             }
-    //         })
-    //     }))
-    // },
+    updateQuestions(context, payload) {
+        return Promise.all(payload.questions.map(question => {
+            return api.dataModule
+            .dataset('questions')
+            .update({
+                question: question.question,
+                order: question.order,
+                skipped: question.skipped ? true : false
+            })
+            .where(field('id').isEqualTo(question.id))
+            .execute()
+        }))
+    },
 
-    // updateAnswers(context, payload) {
-    //     return axios.all(payload.answers.map(answer => {
-    //         return api({
-    //             method: 'patch',
-    //             url: `/ds/answers?cond=[{"field":"id"}, "=", "${answer.id}"]`,
-    //             data: {
-    //                 answer: answer.answer
-    //             }
-    //         })
-    //     }))
-    // },
+    updateAnswers(context, payload) {
+        return Promise.all(payload.answer.map(answer => {
+            return api.dataModule
+            .dataset('answers')
+            .update({
+                answer: answer.answer
+            })
+            .where(field('id').isEqualTo(answer.id))
+            .execute()
+        }))
+    },
 
 
 
-    // //  ___      _     _
-    // // |   \ ___| |___| |_ ___
-    // // | |) / -_) / -_)  _/ -_)
-    // // |___/\___|_\___|\__\___|
+    //  ___      _     _
+    // |   \ ___| |___| |_ ___
+    // | |) / -_) / -_)  _/ -_)
+    // |___/\___|_\___|\__\___|
     
-    // deletePoll(context, payload) {
-    //     return axios.all([
-    //         api({
-    //             method: 'delete',
-    //             url: `/ds/polls?cond=[{"field":"id"}, "=", "${payload.poll.id}"]`
-    //         }),
+    deletePoll(context, payload) {
+        return Promise.all([
+            api.dataModule
+            .dataset('polls')
+            .delete()
+            .where(field('id').isEqualTo(payload.poll.id))
+            .execute(),
+            api.dataModule
+            .dataset('questions')
+            .delete()
+            .where(field('poll_uuid').isEqualTo(payload.poll.id))
+            .execute(),
+            api.dataModule
+            .dataset('answers')
+            .delete()
+            .where(field('poll_uuid').isEqualTo(payload.poll.id))
+            .execute()
+        ])
+    },
 
-    //         api({
-    //             method: 'delete',
-    //             url: `/ds/questions?cond=[{"field":"poll_uuid"}, "=", "${payload.poll.id}"]`
-    //         }),
+    deleteQuestions(context, payload) {
+        let questions = payload.questions.map(question => {
+            return api.dataModule
+            .dataset('questions')
+            .delete()
+            .where(field('id').isInArray(question.id))
+            .execute()
+        })
 
-    //         api({
-    //             method: 'delete',
-    //             url: `/ds/answers?cond=[{"field":"poll_uuid"}, "=", "${payload.poll.id}"]`
-    //         })
-    //     ])
+        let answers = payload.questions.map(question => {
+            return api.dataModule
+            .dataset('answers')
+            .delete()
+            .where(field('question_uuid').isInArray(question.id))
+            .execute()
+        })
+        
+        return Promise.all([
+            ...questions,
+            ...answers
+        ])
+    },
 
-    //     .then(() => {
-    //         context.commit('poll/deletePoll', { poll: payload.poll }, { root: true })
+    deleteAnswers(context, payload) {
+        let answers = payload.answers.map(el => {
+            return el.id
+        })
 
-    //         Vue.notify({
-    //             group: 'msg',
-    //             type: 'success',
-    //             title: 'Poll deleted'
-    //         })
-    //     })
-    // },
-
-    // deleteQuestions(context, payload) {
-    //     let questions = payload.questions.map(el => {
-    //         return el.id
-    //     })
-
-    //     return axios.all([
-    //         api({
-    //             method: 'delete',
-    //             url: `/ds/questions?cond=[{"field":"id"}, "in", ${JSON.stringify(questions)}]`
-    //         }),
-
-    //         api({
-    //             method: 'delete',
-    //             url: `/ds/answers?cond=[{"field":"question_uuid"}, "in", ${JSON.stringify(questions)}]`
-    //         })
-    //     ])
-
-    //     .then(() => {
-    //         context.commit('poll/deleteQuestions', { questions: payload.questions }, { root: true })
-    //     })
-    // },
-
-    // deleteAnswers(context, payload) {
-    //     let answers = payload.answers.map(el => {
-    //         return el.id
-    //     })
-
-    //     return api({
-    //         method: 'delete',
-    //         url: `/ds/answers?cond=[{"field":"id"}, "in", ${JSON.stringify(answers)}]`
-    //     })
-
-    //     .then(() => {
-    //         context.commit('poll/deleteAnswers', { answers: payload.answers }, { root: true })
-    //     })
-    // }
+        return api.dataModule
+        .dataset('answers')
+        .delete()
+        .where(field('id').isInArray(answers))
+        .execute()
+    }
 }
 
 

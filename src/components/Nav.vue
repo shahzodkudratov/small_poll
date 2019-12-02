@@ -18,7 +18,8 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex';
+    import { mapState, mapGetters } from 'vuex'
+    import api from '@/helpers/api'
 
     export default{
         methods: {
@@ -46,10 +47,35 @@
         computed: {
             ...mapGetters({
                 getPolls: 'poll/getPolls'
-            })
+            }),
+
+            ...mapState([
+                'authorized'
+            ])
         },
         created() {
-            //this.$store.dispatch('poll/getPolls')
+            api.login()
+            .then(() => {
+                this.$store.commit('setAuthorized', true)
+                this.$store.dispatch('poll/getPolls')
+                .then(() => {
+                    this.$store.commit('setPreloader', false)
+                })
+            })
+            .catch(() => {
+                this.$notify({
+                    group: 'msg',
+                    type: 'error',
+                    title: 'Not authorized',
+                })
+
+                this.$store.commit('setAuthorized', false)
+                this.$store.commit('setPreloader', false)
+
+                if(this.$router.currentRoute.name !== 'login') {
+                    this.$router.push({ path: '/login' })
+                }
+            })
         }
     };
 </script>

@@ -11,9 +11,9 @@
             <Questions v-bind:poll="sortedPoll"></Questions>
 
             <div class="buttons">
-                <button v-on:click="updatePoll(poll)" :class="{ disabled: isBusy }" :disabled="isBusy">Save changes</button>
-                <button v-on:click="deletePoll({ poll: poll })" :class="{ disabled: isBusy }" :disabled="isBusy">Delete poll</button>
-                <router-link to="/" tag="button" :class="{ disabled: isBusy }" :disabled="isBusy">Cancel</router-link>
+                <button v-on:click="updatePoll(poll)" :class="{ disabled: busy }" :disabled="busy">Save changes</button>
+                <button v-on:click="deletePoll(poll)" :class="{ disabled: busy }" :disabled="busy">Delete poll</button>
+                <router-link to="/" tag="button" :class="{ disabled: busy }" :disabled="busy">Cancel</router-link>
             </div>
         </div>
         <Widget v-bind:poll="originPoll" v-if="!notFound"></Widget>
@@ -27,7 +27,7 @@
 </style>
 
 <script>
-    import { mapGetters, mapMutations, mapActions } from 'vuex'
+    import { mapState, mapGetters } from 'vuex'
     import Questions from '@/components/Questions'
     import Widget from '@/components/Widget'
 
@@ -45,8 +45,11 @@
         },
         
         computed: {
+            ...mapState([
+                'busy'
+            ]),
+            
             ...mapGetters({
-                isBusy: 'isBusy',
                 getPollById: 'poll/getPollById',
                 validatePoll: 'poll/validatePoll'
             }),
@@ -73,16 +76,36 @@
         },
 
         methods: {
-            ...mapMutations({
-                updatePoll: 'poll/updatePoll'
-            }),
+            deletePoll(poll) {
+                this.$store.commit('setBusy', true)
 
-            ...mapActions({
-                deletePoll: 'apicalls/deletePoll'
-            }),
+                this.$store.dispatch('poll/deletePoll', { poll: poll })
+
+                .then(() => {
+                    this.$notify({
+                        group: 'msg',
+                        type: 'success',
+                        title: 'Poll deleted'
+                    })
+                })
+
+                .catch(() => {
+                    this.$notify({
+                        group: 'msg',
+                        type: 'error',
+                        title: 'Error occured'
+                    })
+                })
+
+                .finally(() => {
+                    this.$store.commit('setBusy', false)
+                })
+            },
 
             updatePoll(poll) {
                 if(this.validatePoll({ poll: poll })) {
+                    this.$store.commit('setBusy', true)
+
                     this.$store.dispatch('poll/updatePoll', { poll: this.poll, originPoll: this.originPoll })
 
                     .then(() => {
@@ -91,6 +114,18 @@
                             type: 'success',
                             title: 'Poll updated'
                         })
+                    })
+
+                    .catch(() => {
+                        this.$notify({
+                            group: 'msg',
+                            type: 'error',
+                            title: 'Error occured'
+                        })
+                    })
+
+                    .finally(() => {
+                        this.$store.commit('setBusy', false)
                     })
                 }
             }

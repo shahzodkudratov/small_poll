@@ -1,54 +1,57 @@
-import { jexiaClient, dataOperations } from 'jexia-sdk-js/browser'
-import { UMSModule } from 'jexia-sdk-js'
+import { jexiaClient, dataOperations, UMSModule } from 'jexia-sdk-js/browser'
 const projectID = '6600e36b-4ecc-473b-ac50-d7795256b092'
-const dataModule = dataOperations();
-const ums = UMSModule();
-
-console.log(jexiaClient()) //eslint-disable-line
+const dataModule = new dataOperations();
+const ums = new UMSModule();
 
 export default {
+    isAuthorized: false,
     dataModule: dataModule,
     login(payload = undefined) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if(payload) {
-                await this.auth(payload.credentials)
-                .then(() => {
+                this.auth(payload.credentials)
+                .then(response => {
                     localStorage.setItem('credentials', JSON.stringify(payload.credentials))
-                    resolve()
+                    this.isAuthorized = true
+                    return resolve(response)
                 })
-                .catch(() => {
+                .catch(error => {
                     localStorage.removeItem('credentials')
-                    reject()
+                    this.isAuthorized = false
+                    return reject(error)
                 })
             } else {
                 let credentials = this.retrieveCredentials()
 
                 if(!credentials) {
-                    return reject()
+                    this.isAuthorized = false
+                    return reject(new Error('No saved user'))
                 }
 
-                await this.auth(credentials)
-                .then(() => {
-                    resolve()
+                this.auth(credentials)
+                .then(response => {
+                    this.isAuthorized = true
+                    return resolve(response)
                 })
-                .catch(() => {
+                .catch(error => {
                     localStorage.removeItem('credentials')
-                    reject()
+                    this.isAuthorized = false
+                    return reject(error)
                 })
             }
         })
     },
     auth(credentials) {
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             if(credentials && credentials.method) {
                 if(credentials.method === 'apk') {
-                    await jexiaClient().init({
+                    jexiaClient().init({
                         projectID: projectID,
                         key: credentials.key,
                         secret: credentials.secret
                     }, dataModule)
-                    .then(() => {
-                        return resolve()
+                    .then(response => {
+                        return resolve(response)
                     })
                     .catch(error => {
                         return reject(error)
@@ -56,27 +59,27 @@ export default {
                 } else if(credentials.method === 'ums') {
                     jexiaClient().init({
                         projectID: projectID
-                    }, ums)
+                    }, ums, dataModule)
 
                     ums.signIn({
                         email: credentials.email,
                         password: credentials.password,
                         default: true
                     })
-                    .then(() => {
-                        return resolve()
+                    .then(response => {
+                        return resolve(response)
                     })
                     .catch(error => {
                         return reject(error)
                     })
                 }
+            } else {
+                return reject()
             }
-
-            reject()
         })
     },
     retrieveCredentials() {
         let credentials = localStorage.getItem('credentials')
-        return credentials ? credentials : undefined
+        return credentials ? JSON.parse(credentials) : undefined
     }
 }

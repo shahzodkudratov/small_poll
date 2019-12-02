@@ -14,7 +14,6 @@
 // @ is an alias to /src
 import Nav from '@/components/Nav.vue'
 import Preloader from '@/components/Preloader.vue'
-import { mapMutations } from 'vuex'
 
 export default {
     name: 'app',
@@ -28,18 +27,6 @@ export default {
         showNav() {
             return this.$route.name !== 'login'
         }
-    },
-
-    methods: {
-        ...mapMutations({
-            setPreloader: 'setPreloader'
-        })
-    },
-
-    mounted() {
-        setTimeout(() => {
-            this.setPreloader(false)
-        }, 1000)
     }
 };
 </script>

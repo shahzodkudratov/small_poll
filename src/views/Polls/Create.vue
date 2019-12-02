@@ -11,8 +11,8 @@
             <Questions v-bind:poll="sortedPoll"></Questions>
 
             <div class="buttons">
-                <button v-on:click="createPoll(poll)" :class="{ disabled: isBusy }" :disabled="isBusy">Create poll</button>
-                <router-link to="/" tag="button" :class="{ disabled: isBusy }" :disabled="isBusy">Cancel</router-link>
+                <button v-on:click="createPoll(poll)" :class="{ disabled: busy }" :disabled="busy">Create poll</button>
+                <router-link to="/" tag="button" :class="{ disabled: busy }" :disabled="busy">Cancel</router-link>
             </div>
         </div>
     </div>
@@ -20,7 +20,7 @@
 
 <script>
 
-    import { mapGetters } from 'vuex'
+    import { mapState, mapGetters } from 'vuex'
     import uuidv4 from 'uuid/v4'
     import Questions from '@/components/Questions'
     
@@ -67,9 +67,12 @@
         },
 
         computed: {
+            ...mapState([
+                'busy'
+            ]),
+
             ...mapGetters({
-                validatePoll: 'poll/validatePoll',
-                isBusy: 'isBusy'
+                validatePoll: 'poll/validatePoll'
             }),
 
             sortedPoll() {
@@ -92,13 +95,8 @@
         methods: {
             createPoll(poll) {
                 if(this.validatePoll({ poll: poll })) {
-                    this.$notify({
-                        group: 'msg',
-                        type: 'info',
-                        title: 'Creating Poll'
-                    })
-
-                    this.$store.commit('setBusy', true, { root: true })
+                    
+                    this.$store.commit('setBusy', true)
 
                     this.$store.dispatch('poll/createPoll', { poll: this.poll })
 
@@ -116,7 +114,7 @@
                         this.$notify({
                             group: 'msg',
                             type: 'error',
-                            title: 'Poll is not created'
+                            title: 'Error occured'
                         })
                     })
 

@@ -20,8 +20,8 @@
                 </table>
             </div>
             <div class="buttons">
-                <button :class="{ disabled: isBusy }" :disabled="isBusy" v-on:click="refresh">Refresh</button>
-                <router-link :to="{ name: 'update', params: { id: poll.id }}" tag="button" :class="{ disabled: isBusy }" :disabled="isBusy">Edit poll</router-link>
+                <button :class="{ disabled: busy }" :disabled="busy" v-on:click="refresh">Refresh</button>
+                <router-link :to="{ name: 'update', params: { id: poll.id }}" tag="button" :class="{ disabled: busy }" :disabled="busy">Edit poll</router-link>
             </div>
         </div>
     </div>
@@ -47,7 +47,7 @@
 </style>
 
 <script>
-    import { mapGetters } from 'vuex'
+    import { mapState, mapGetters } from 'vuex'
 
     export default {
         data() {
@@ -58,8 +58,10 @@
         },
         
         computed: {
+            ...mapState([
+                'busy'
+            ]),
             ...mapGetters({
-                isBusy: 'isBusy',
                 getPollById: 'poll/getPollById'
             }),
 
@@ -82,6 +84,8 @@
 
         methods: {
             refresh() {
+                this.$store.commit('setBusy', true)
+
                 this.$store.dispatch('poll/getPolls')
 
                 .then(() => {
@@ -93,8 +97,16 @@
                     })
                 })
 
-                .finally(() => {
+                .catch(() => {
+                    this.$notify({
+                        group: 'msg',
+                        type: 'error',
+                        title: 'Error occured'
+                    })
+                })
 
+                .finally(() => {
+                    this.$store.commit('setBusy', false)
                 })
             },
 

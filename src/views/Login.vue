@@ -18,14 +18,14 @@
             </div>
         </div>
         <div class="footer">
-            <button v-on:click="verify" :class="{ disabled: isBusy }" :disabled="isBusy">Login</button>
+            <button v-on:click="verify" :class="{ disabled: busy }" :disabled="busy">Login</button>
         </div>
         <div class="message">Access key will be saved in browser local storage</div>
     </div>
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
+    import { mapState } from 'vuex'
 
     export default {
         data() {
@@ -45,8 +45,8 @@
         },
 
         computed: {
-            ...mapGetters([
-                'isBusy'
+            ...mapState([
+                'busy'
             ])
         },
 

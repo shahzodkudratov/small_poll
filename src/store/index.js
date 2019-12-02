@@ -14,17 +14,18 @@ export default new Vuex.Store({
 
     state: {
         busy: false,
+        authorized: false,
         preloader: true
     },
 
     getters: {
-        isBusy(state) {
-            return state.busy
-        }
     },
 
     mutations: {
         setBusy(state, payload) {
+            state.busy = payload
+        },
+        setAuthorized(state, payload) {
             state.busy = payload
         },
         setPreloader(state, payload) {
