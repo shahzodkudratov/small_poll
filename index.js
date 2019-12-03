@@ -2,7 +2,6 @@ const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const app = express()
-const history = require('connect-history-api-fallback')
 const jexiaSDK = require("jexia-sdk-js/node")
 const field = require("jexia-sdk-js").field
 const dataModule = jexiaSDK.dataOperations()
@@ -13,9 +12,6 @@ app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static('widget'))
 app.use('/admin', express.static('dist'))
-app.use(history({
-    index: '/admin/index.html'
-}))
 
 const credentials = {
     projectID: "6600e36b-4ecc-473b-ac50-d7795256b092",
