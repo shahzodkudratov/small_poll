@@ -9,7 +9,7 @@ var s_p_w = {
     var _this = this;
 
     var request = new XMLHttpRequest();
-    request.open("GET", "http://d3fdb600-4048-4a62-9cae-f17852506533.jexia.app/poll/" + s_p_w_poll_uuid);
+    request.open("GET", "https://13fdb418-0318-4c0c-b344-7780db36f2ba.jexia.app/poll/" + s_p_w_poll_uuid);
     request.send();
     request.addEventListener('load', function (event) {
         if(event.target.status !== 404 && event.target.status !== 500) {
@@ -47,7 +47,7 @@ var s_p_w = {
         }
 
         var request = new XMLHttpRequest();
-        request.open("POST", "http://d3fdb600-4048-4a62-9cae-f17852506533.jexia.app/vote");
+        request.open("POST", "http://13fdb418-0318-4c0c-b344-7780db36f2ba.jexia.app/vote");
         request.setRequestHeader('Content-Type', 'application/json');
         request.send(JSON.stringify(votes));
     }
