@@ -11,7 +11,7 @@ const isValidV4UUID = uuid => uuidV4Regex.test(uuid)
 app.use(cors())
 app.use(bodyParser.json())
 app.use(express.static('widget'))
-app.get('/admin', express.static('dist'))
+app.use('/admin', express.static('dist'))
 
 const credentials = {
     projectID: "6600e36b-4ecc-473b-ac50-d7795256b092",
