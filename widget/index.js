@@ -1,5 +1,6 @@
 "use strict";
 
+
 var s_p_w = {
   response: undefined,
   html: function html() {
