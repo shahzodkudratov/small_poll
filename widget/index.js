@@ -47,7 +47,7 @@ var s_p_w = {
         }
 
         var request = new XMLHttpRequest();
-        request.open("POST", "http://13fdb418-0318-4c0c-b344-7780db36f2ba.jexia.app/vote");
+        request.open("POST", "https://13fdb418-0318-4c0c-b344-7780db36f2ba.jexia.app/vote");
         request.setRequestHeader('Content-Type', 'application/json');
         request.send(JSON.stringify(votes));
     }
